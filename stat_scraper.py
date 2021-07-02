@@ -29,14 +29,22 @@ def convert_day(day):
 def make_url():
     return url + str(year) + str(convert_month(month)) + str(convert_day(day))
 
-
 # TESTING DATE IS JANUARY 10, 2003 OR 01 10 2003
 # print(make_url())
+count = 0
 PATH = "C:\Program Files (x86)\chromedriver.exe"
 driver = webdriver.Chrome(PATH)
 url = 'https://www.espn.com/nba/scoreboard/_/date/'
 driver.get(make_url())
-link = driver.find_element_by_xpath('//*[@id="230110006"]/div/section/a[2]')
-link.click()
-points = driver.find_element_by_xpath('')
-print(points.text)
+
+# events = driver.find_elements_by_xpath('//*[@id="events"]')
+
+# scoreboard = driver.find_elements_by_css_selector('scoreboard basketball final home-winner js-show')
+
+button_numbers = driver.find_elements_by_xpath("//*[@div ='events']//a[contains(@href, 'boxscore')]")
+print(len(button_numbers))
+
+# link = driver.find_element_by_xpath('//*[@id="230110006"]/div/section/a[2]')
+# link.click()
+# points = driver.find_element_by_xpath('')
+# print(points.text)
