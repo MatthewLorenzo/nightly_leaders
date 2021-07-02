@@ -5,6 +5,10 @@
 
 import selenium
 from selenium import webdriver
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.common.keys import Keys
 
 print('PLEASE PRINT IN NUMBER FORMAT - mm/dd/yyyy')
 month = int(input('enter the month: \n'))
@@ -37,14 +41,21 @@ driver = webdriver.Chrome(PATH)
 url = 'https://www.espn.com/nba/scoreboard/_/date/'
 driver.get(make_url())
 
-# events = driver.find_elements_by_xpath('//*[@id="events"]')
-
-# scoreboard = driver.find_elements_by_css_selector('scoreboard basketball final home-winner js-show')
-
-button_numbers = driver.find_elements_by_xpath("//*[@div ='events']//a[contains(@href, 'boxscore')]")
-print(len(button_numbers))
-
-# link = driver.find_element_by_xpath('//*[@id="230110006"]/div/section/a[2]')
-# link.click()
-# points = driver.find_element_by_xpath('')
-# print(points.text)
+# looks for event, and only works after checking if it exists on the page after 10 seconds
+try:
+    events = WebDriverWait(driver, 10).until(
+        EC.presence_of_element_located((By.ID, "events"))
+    )
+    num_buttons = 0
+    games = events.find_elements_by_tag_name("article")
+    for game in games:
+        boxscore_buttons = game.find_elements_by_name("&lpos=nba:scoreboard:boxscore")
+        for button in boxscore_buttons:
+            button.send_keys(Keys.COMMAND + 't')
+            # button.click()
+            print('successfully opened page')
+            num_buttons += 1
+    print('number of box score buttons = ' + str(num_buttons))
+finally:
+    # driver.quit()
+    print('done')
