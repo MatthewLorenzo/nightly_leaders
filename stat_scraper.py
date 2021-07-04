@@ -30,32 +30,38 @@ def convert_day(day):
     return day
 
 # makes new url
-def make_url():
-    return url + str(year) + str(convert_month(month)) + str(convert_day(day))
+def make_main_url():
+    return main_url + str(year) + str(convert_month(month)) + str(convert_day(day))
+
+# makes url for each game box score
+def make_game_url(game_id):
+    return game_url + str(game_id)
 
 # TESTING DATE IS JANUARY 10, 2003 OR 01 10 2003
-# print(make_url())
+
 count = 0
 PATH = "C:\Program Files (x86)\chromedriver.exe"
 driver = webdriver.Chrome(PATH)
-url = 'https://www.espn.com/nba/scoreboard/_/date/'
-driver.get(make_url())
+main_url = 'https://www.espn.com/nba/scoreboard/_/date/'
+game_url = 'https://www.espn.com/nba/boxscore/_/gameId/'
+driver.get(make_main_url())
 
 # looks for event, and only works after checking if it exists on the page after 10 seconds
 try:
+    game_list = []
     events = WebDriverWait(driver, 10).until(
         EC.presence_of_element_located((By.ID, "events"))
     )
-    num_buttons = 0
-    games = events.find_elements_by_tag_name("article")
+    games = events.find_elements_by_class_name("scoreboard")
     for game in games:
-        boxscore_buttons = game.find_elements_by_name("&lpos=nba:scoreboard:boxscore")
-        for button in boxscore_buttons:
-            button.send_keys(Keys.COMMAND + 't')
-            # button.click()
-            print('successfully opened page')
-            num_buttons += 1
-    print('number of box score buttons = ' + str(num_buttons))
+        game_id = game.get_attribute('id')
+        game_list.append(game_id) 
+        count += 1
+    for game in game_list:
+        driver.execute_script("window.open(' ');")
+        driver.get(make_game_url(game))
+
+    print('total number of games = ' + str(count))
 finally:
     # driver.quit()
     print('done')
